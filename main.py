@@ -76,6 +76,14 @@ def create_item(item: schemas.ItemBase, db: Session = Depends(get_db)):
     db.refresh(db_item) # Refresh to get the new ID from the database
     return db_item
 
+@app.get("/items", response_model=List[schemas.ItemResponse], tags=["Items"])
+def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Retrieve a list of items, with optional pagination.
+    """
+    items = db.query(models.Item).offset(skip).limit(limit).all()
+    return items
+
 @app.get("/items/{item_id}", response_model=schemas.ItemResponse, tags=["Items"])
 def read_item(item_id: int, db: Session = Depends(get_db)):
     """
