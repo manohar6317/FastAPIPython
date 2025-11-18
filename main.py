@@ -3,8 +3,9 @@ from fastapi import FastAPI, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from . import models, schemas
-from .database import SessionLocal, engine, get_db
+import models
+import schemas
+from database import SessionLocal, engine, get_db
 
 # --- Configuration & Constants ---
 
