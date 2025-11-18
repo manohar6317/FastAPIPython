@@ -137,6 +137,34 @@ def read_item(item_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
 
+@app.put("/items/{item_id}", response_model=ItemResponse, tags=["Items"])
+def update_item(item_id: int, item: ItemBase, db: Session = Depends(get_db)):
+    """
+    Update an existing item's name, category, and value by its ID.
+    """
+    db_item = db.query(Item).filter(Item.id == item_id).first()
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    # Update the fields of the existing item
+    db_item.name = item.name
+    db_item.category = item.category
+    db_item.value = item.value
+
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+@app.delete("/items/{item_id}", status_code=204, tags=["Items"])
+def delete_item(item_id: int, db: Session = Depends(get_db)):
+    """
+    Delete an item from the database by its ID.
+    """
+    db_item = db.query(Item).filter(Item.id == item_id).first()
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    db.delete(db_item)
+    db.commit()
 
 @app.post("/reset-database", status_code=200, tags=["Development"])
 def reset_database():
