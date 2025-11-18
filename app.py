@@ -1,6 +1,6 @@
 # app.py
 
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends, Query, HTTPException
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
@@ -125,6 +125,16 @@ def create_item(item: ItemBase, db: Session = Depends(get_db)):
     db.add(db_item)
     db.commit()
     db.refresh(db_item) # Refresh to get the new ID from the database
+    return db_item
+
+@app.get("/items/{item_id}", response_model=ItemResponse, tags=["Items"])
+def read_item(item_id: int, db: Session = Depends(get_db)):
+    """
+    Retrieve a single item by its ID.
+    """
+    db_item = db.query(Item).filter(Item.id == item_id).first()
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
     return db_item
 
 
