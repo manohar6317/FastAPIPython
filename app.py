@@ -126,18 +126,24 @@ def reset_database():
 @app.get("/process", response_model=ProcessResponse)
 def process_items(
     top_n: int = Query(3, ge=1, description="Number of top-scoring items to return."),
+    category: Optional[str] = Query(None, description="Filter items by a specific category."),
     db: Session = Depends(get_db)
 ):
     """
-    Processes all items, calculates their scores, and returns the top N items
-    along with overall statistics.
+    Processes items, calculates their scores, and returns the top N items
+    along with overall statistics. Can be filtered by category.
     """
-    all_items = db.query(Item).all()
+    query = db.query(Item)
+    if category:
+        # If a category is provided, filter the database query
+        query = query.filter(Item.category == category)
+
+    items_to_process = query.all()
     
     # Calculate score for each item
     scored_items = []
     total_score = 0.0
-    for item in all_items:
+    for item in items_to_process:
         weight = CATEGORY_WEIGHTS.get(item.category, 1.0) # Default to 1.0 if category not in weights
         score = item.value * weight
         total_score += score
