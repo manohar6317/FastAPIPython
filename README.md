@@ -1,8 +1,17 @@
 # Item Processing API
 
-This is a simple FastAPI project that demonstrates database interaction with SQLAlchemy, data seeding, and a processing endpoint.
+A comprehensive FastAPI application demonstrating a full CRUD (Create, Read, Update, Delete) API for managing tech products. It includes a data processing endpoint to calculate scores and provide analytics.
 
-The API provides one endpoint, `/process`, which calculates a score for each item in the database and returns the top-scoring items along with aggregate statistics.
+## Features
+
+*   **Full CRUD Functionality**: Create, read, update, and delete items.
+*   **Database Integration**: Uses SQLite with SQLAlchemy ORM.
+*   **Automatic Data Seeding**: Populates the database with sample tech products on first run.
+*   **Data Validation**: Leverages Pydantic for robust request and response validation.
+*   **Advanced Processing**: A `/process` endpoint that calculates a custom score for each item and provides aggregate statistics.
+*   **Filtering**: The `/process` endpoint supports filtering by category.
+*   **Interactive Documentation**: Automatic, interactive API documentation provided by Swagger UI (`/docs`).
+*   **Development Utilities**: Includes a `/reset-database` endpoint for easy development and testing.
 
 ## Setup and Run
 

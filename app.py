@@ -1,5 +1,6 @@
 # app.py
 
+import random
 from fastapi import FastAPI, Depends, Query, HTTPException
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import sessionmaker, Session
@@ -27,6 +28,7 @@ class Item(Base):
     name = Column(String, index=True)
     category = Column(String)
     value = Column(Float)
+    rating = Column(Integer)
 
 # --- Pydantic Models (for API request/response) ---
 
@@ -34,6 +36,7 @@ class ItemBase(BaseModel):
     name: str
     category: str
     value: float
+    rating: int
 
 class ItemResponse(ItemBase):
     id: int
@@ -70,13 +73,13 @@ def seed_database(db: Session):
         if db.query(Item).first() is None:
             print("Database is empty. Seeding with sample data...")
             sample_items = [
-                Item(name="Laptop Pro X", category="laptop", value=1499.99),
-                Item(name="Smartphone Z", category="smartphone", value=899.50),
-                Item(name="AudioMax Headphones", category="headphones", value=199.00),
-                Item(name="UltraWide Monitor", category="monitor", value=650.0),
-                Item(name="Laptop Air M2", category="laptop", value=1299.00),
-                Item(name="Gamer Headset v2", category="headphones", value=120.75),
-                Item(name="Smartwatch 5", category="wearable", value=350.0), # Category with no weight
+                Item(name="Laptop Pro X", category="laptop", value=1499.99, rating=random.randint(1, 4)),
+                Item(name="Smartphone Z", category="smartphone", value=899.50, rating=random.randint(1, 4)),
+                Item(name="AudioMax Headphones", category="headphones", value=199.00, rating=random.randint(1, 4)),
+                Item(name="UltraWide Monitor", category="monitor", value=650.0, rating=random.randint(1, 4)),
+                Item(name="Laptop Air M2", category="laptop", value=1299.00, rating=random.randint(1, 4)),
+                Item(name="Gamer Headset v2", category="headphones", value=120.75, rating=random.randint(1, 4)),
+                Item(name="Smartwatch 5", category="wearable", value=350.0, rating=random.randint(1, 4)), # Category with no weight
             ]
             db.add_all(sample_items)
             db.commit()
@@ -150,6 +153,7 @@ def update_item(item_id: int, item: ItemBase, db: Session = Depends(get_db)):
     db_item.name = item.name
     db_item.category = item.category
     db_item.value = item.value
+    db_item.rating = item.rating
 
     db.commit()
     db.refresh(db_item)
@@ -210,6 +214,7 @@ def process_items(
             name=item.name,
             category=item.category,
             value=item.value,
+            rating=item.rating,
             score=score
         ))
 
