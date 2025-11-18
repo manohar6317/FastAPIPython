@@ -2,6 +2,15 @@
 
 A comprehensive FastAPI application demonstrating a full CRUD (Create, Read, Update, Delete) API for managing tech products. It includes a data processing endpoint to calculate scores and provide analytics.
 
+## Tech Stack
+
+*   **Backend Framework**: [FastAPI](https://fastapi.tiangolo.com/)
+*   **Database**: [SQLite](https://www.sqlite.org/index.html)
+*   **ORM**: [SQLAlchemy](https://www.sqlalchemy.org/)
+*   **Data Validation**: [Pydantic](https://docs.pydantic.dev/)
+*   **Production Server**: [Gunicorn](https://gunicorn.org/) + [Uvicorn](https://www.uvicorn.org/)
+*   **Reverse Proxy**: [Nginx](https://www.nginx.com/)
+
 ## Features
 
 *   **Full CRUD Functionality**: Create, read, update, and delete items.
