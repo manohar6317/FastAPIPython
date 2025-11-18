@@ -35,6 +35,12 @@ class ItemBase(BaseModel):
     category: str
     value: float
 
+class ItemResponse(ItemBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
 class ItemWithScore(ItemBase):
     id: int
     score: float
@@ -108,7 +114,21 @@ def read_root():
     """A simple root endpoint that provides a welcome message and a link to the docs."""
     return {"message": "Welcome to the Item Processing API. Visit /docs for interactive documentation."}
 
-@app.post("/reset-database", status_code=200, tags=["Database"])
+@app.post("/items", response_model=ItemResponse, status_code=201, tags=["Items"])
+def create_item(item: ItemBase, db: Session = Depends(get_db)):
+    """
+    Create a new item in the database. The request body should be a JSON object
+    with 'name', 'category', and 'value'.
+    """
+    # Create a SQLAlchemy model instance from the Pydantic model
+    db_item = Item(**item.model_dump())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item) # Refresh to get the new ID from the database
+    return db_item
+
+
+@app.post("/reset-database", status_code=200, tags=["Development"])
 def reset_database():
     """
     Drops all data, recreates tables, and reseeds with sample data.
@@ -123,7 +143,7 @@ def reset_database():
     return {"message": "Database has been successfully reset and reseeded."}
 
 
-@app.get("/process", response_model=ProcessResponse)
+@app.get("/process", response_model=ProcessResponse, tags=["Items"])
 def process_items(
     top_n: int = Query(3, ge=1, description="Number of top-scoring items to return."),
     category: Optional[str] = Query(None, description="Filter items by a specific category."),
